@@ -34,7 +34,7 @@ int main(){
     读取图片，读入的是彩色图
     同时判断是否读取失败
     */
-    src = cv::imread("../resources/test_image_2.png", cv::IMREAD_COLOR);
+    src = cv::imread("resources/test_image_2.png", cv::IMREAD_COLOR);
     if (src.empty()){
         cout << "img not found" << endl;
         return 0;
@@ -85,13 +85,13 @@ int main(){
             vector<cv::Point2f> temp;
             rotRect.points(temp);
             pts.push_back(temp);        
-            DrawRotatedRect(src,rotRect, cv::Scalar(0,0,255), 1, 16);
+            DrawRotatedRect(src,rotRect, cv::Scalar(0,0,255), 3, 16);
             DrawRotatedRect(res,rotRect, cv::Scalar(0,0,255), 1, 16);
             cout << rotRect.size.area() << endl;
             cv::drawContours(res, contours,i,cv::Scalar(255,255,255));
         } 
     }
-    cv::rectangle(src,pts[0][0], pts[1][3],cv::Scalar(255,255,255),5,16);
+    cv::rectangle(src,pts[0][0], pts[1][3],cv::Scalar(0,255,0),5,16);
 
 
     //res = gray;
@@ -100,6 +100,7 @@ int main(){
     cv::resize(src, src, cv::Size(1280, 720));
     cv::imshow("result", res);
     cv::imshow("src", src);
+    cv::imwrite("./resources/ArmorRecognized.jpg", src);
     cv::waitKey(0);
     return 0;
 }
