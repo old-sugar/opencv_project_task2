@@ -187,7 +187,7 @@ int main(){
             cv::drawContours(res, contours,i,cv::Scalar(255,255,255));
         } 
     }
-    cv::rectangle(src,pts[0][0], pts[1][3],cv::Scalar(0,255,0),5,16);
+    cv::rectangle(src,(pts[0][0]+cv::Point2f(0,100)), pts[1][2]+cv::Point2f(0,-100),cv::Scalar(0,255,0),5,16);
 
 
     // 显示图片,同时调整大小，不至于铺满整个屏幕
