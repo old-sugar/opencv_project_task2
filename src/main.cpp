@@ -3,24 +3,6 @@
 
 using namespace std;
 
-void DrawRotatedRect(cv::Mat mask,const cv::RotatedRect &rotatedrect,const cv::Scalar &color,int thickness, int lineType)
-{
-    // 提取旋转矩形的四个角点
-	cv::Point2f ps[4];
-	rotatedrect.points(ps);
- 
-    // 构建轮廓线
-	std::vector<std::vector<cv::Point>> tmpContours;    // 创建一个InputArrayOfArrays 类型的点集
-	std::vector<cv::Point> contours;
-	for (int i = 0; i != 4; ++i) {
-		contours.emplace_back(cv::Point2i(ps[i]));
-	}
-	tmpContours.insert(tmpContours.end(), contours);
- 
-    // 绘制轮廓，即旋转矩形
-	drawContours(mask, tmpContours, 0, color,thickness, lineType);  // 填充mask
-}
-
 int main(){
     cv::Mat src1;
     cv::Mat HSVimg;
@@ -172,10 +154,6 @@ int main(){
     cv::split(blurImg, channels);
 
 
-    /*
-    转化灰度图
-    */
-    //cv::cvtColor(src, gray, cv::COLOR_BGR2GRAY);
     
 
     /*
@@ -187,11 +165,8 @@ int main(){
     // 二值化
     cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT,cv::Size(6,6));
     cv::threshold(finalScore, gray,250,255,cv::THRESH_BINARY);
-    //cv::erode(gray,gray,kernel);
     
     cv::morphologyEx(gray,gray,cv::MORPH_OPEN,kernel);
-    // canny边缘检测
-    // cv::Canny(channels[0], res, 100, 300);
     
     // 定义存储边缘和结构列表的容器
     vector<vector<cv::Point2i>> contours;
@@ -208,8 +183,6 @@ int main(){
             vector<cv::Point2f> temp;
             rotRect.points(temp);
             pts.push_back(temp);        
-            DrawRotatedRect(src,rotRect, cv::Scalar(0,0,255), 3, 16);
-            DrawRotatedRect(res,rotRect, cv::Scalar(0,0,255), 1, 16);
             cout << rotRect.size.area() << endl;
             cv::drawContours(res, contours,i,cv::Scalar(255,255,255));
         } 
@@ -217,7 +190,6 @@ int main(){
     cv::rectangle(src,pts[0][0], pts[1][3],cv::Scalar(0,255,0),5,16);
 
 
-    //res = gray;
     // 显示图片,同时调整大小，不至于铺满整个屏幕
     cv::resize(res, res, cv::Size(1280, 720));
     cv::resize(src, src, cv::Size(1280, 720));
