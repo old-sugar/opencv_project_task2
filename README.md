@@ -108,7 +108,62 @@ cv::waitKey(0);
 接下去我们要绘制一个大致的装甲板，获取灯条外接矩形的四个端点，选取左边灯条的左上端点稍向上平移和右边灯条的右下端点稍向下平移作矩形，大致就是装甲板的范围
 
 ###### 存储图像
-最后将标出装甲板的图像存储在``"resources/ArmorRecognized.jpg"``即可
+最后将标出装甲板的图像存储在``"result/ArmorRecognized.jpg"``即可
+
+### 其他说明&目录结构
+终端输出文件存储在 ./result/terminal.png
+
+此外
+RedImg.jpg 也就是提取红色区域的图片是在HSVImg.jpg的基础上经过一次高斯滤波后再提取的
+redContours&boundingBox.jpg 寻找红色外轮廓以及boundingBox是在RedImg.jpg的基础上去寻找轮廓的
+binImg.jpg 二值化是在grayImg.jpg的基础上完成的
+dilateImg.jpg 膨胀是在binImg.jpg的基础上完成的
+erodeImg.jpg 腐蚀是在binImg.jpg的基础上完成的
+drawing.jpg 是在纯黑背景图上完成的
+其余的其他图片都是在原图的基础上完成的
+
+##### 终端输出结果解读
+```
+花图片对应轮廓的面积
+The Area of Contours 14 is 20445
+The Area of Contours 47 is 38451.5
+1080
+1054
+```
+
+前三行是对花图片中红色外轮廓面积的输出，后两行是装甲板图片中灯条面积的输出
+
+##### 目录结构以及注释：
+```
+./                                # 总文件夹
+├── CMakeLists.txt                    # Cmake文件
+├── README.md                         # README文件
+├── resources                         # 存储原图像的文件夹
+│   ├── README_Img                        # README文件需要引用的图片存储在该文件夹下
+│   │   └── reflectBlue.png                   # README文件引用的一张图片
+│   ├── test_image_2.png              # 识别装甲板图片
+│   └── test_image.png                # 花朵的图片
+├── result                            # 输出图片
+│   ├── ArmorRecognized.jpg               # 装甲板识别的结果
+│   ├── binImg.jpg                        # 二值化图片
+│   ├── blurImg.jpg                       # 滤波图片
+│   ├── cutImg.jpg                        # 裁剪图片
+│   ├── dilateImg.jpg                     # 膨胀图片
+│   ├── drawing.jpg                       # 绘制形状和文字的图片
+│   ├── erodeImg.jpg                      # 腐蚀图片
+│   ├── floodFillImg.jpg                  # 漫水图片
+│   ├── gaussianBlurImg.jpg               # 高斯滤波的图片
+│   ├── grayImg.jpg                       # 灰度图
+│   ├── HSVImg.jpg                        # HSV图片
+│   ├── redContours&boundingBox.jpg       # 识别红色轮廓和boundingBox的图片
+│   ├── RedImg.jpg                        # 筛选红色区域的图片
+│   ├── rotateImg.jpg                     # 旋转的图片
+│   └── terminal.png                      # 终端输出截图
+└── src                               # 源代码文件夹
+    └── main.cpp                          # 源代码
+```
+
+
 
 
 

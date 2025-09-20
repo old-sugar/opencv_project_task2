@@ -1,8 +1,0 @@
-[
-{
-  "directory": "/home/jiacharles/private/opencvProgramme/RM2026/Mission2/opencv_project/build",
-  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -o CMakeFiles/opencv_project.dir/src/main.cpp.o -c /home/jiacharles/private/opencvProgramme/RM2026/Mission2/opencv_project/src/main.cpp",
-  "file": "/home/jiacharles/private/opencvProgramme/RM2026/Mission2/opencv_project/src/main.cpp",
-  "output": "CMakeFiles/opencv_project.dir/src/main.cpp.o"
-}
-]

@@ -15,32 +15,42 @@ int main(){
     // 读取测试图片（小花）
     src1 = cv::imread("resources/test_image.png",cv::IMREAD_COLOR);
     if (src1.empty()){
-        cout << "test img not found" << endl;
+       
+       cout << "test img not found" << endl;
         return 1;
     }
     // 图像颜色空间转换
     // 转化为灰度图
     cv::cvtColor(src1, gray, cv::COLOR_BGR2GRAY);
+    cv::imwrite("result/grayImg.jpg", gray);
+
     // 转化为HSV
     cv::cvtColor(src1, HSVimg, cv::COLOR_BGR2HSV);
+    cv::imwrite("result/HSVImg.jpg", HSVimg);
     
     // 各种滤波操作
     // 均值滤波
-    cv::blur(HSVimg, blurImg, cv::Size(5,5));
+    cv::blur(src1, blurImg, cv::Size(5,5));
+    cv::imwrite("result/blurImg.jpg",blurImg);
     // 高斯滤波
-    cv::GaussianBlur(HSVimg, gaussianImg, cv::Size(5,5), 0);
+    cv::GaussianBlur(src1, gaussianImg, cv::Size(5,5), 0);
+    cv::imwrite("result/gaussianBlurImg.jpg", gaussianImg);
 
     // 特征提取
     // 提取红色区域(红色分两部分提取，完成后相加即可)
+    // 先进行一次高斯滤波
+    cv::GaussianBlur(HSVimg, gaussianImg, cv::Size(5,5), 0);
 
     cv::inRange(gaussianImg, cv::Scalar(0,43,46),cv::Scalar(10,255,255), RedImg1);
     cv::inRange(gaussianImg, cv::Scalar(156,43,46),cv::Scalar(180,255,255), RedImg2);
 
     cv::Mat RedImg = RedImg1 + RedImg2;
+    cv::imwrite("result/RedImg.jpg", RedImg);
 
     // 寻找红色外轮廓
     // 借助刚刚提取的红色区域即可
     // 同时框出对应的红色的bounding box, 计算轮廓面积
+    cout << "花图片对应轮廓的面积" << endl; 
 
     cv::Mat temp1(src1.rows, src1.cols,CV_8UC3, cv::Scalar(0,0,0));
     src1.copyTo(temp1);
@@ -55,14 +65,14 @@ int main(){
         
         if (S > 1000){ 
             cv::drawContours(temp1,contours1, i, cv::Scalar(0,0,255),1);
+            // 输出对应轮廓的面积
             cout << "The Area of Contours " << i << " is " << S << endl;
 
             cv::Rect boundingBox = cv::boundingRect(contours1[i]);
             cv::rectangle(temp1, boundingBox, cv::Scalar(0,0,255));
         }
     }
-    //cv::imshow("red img", temp1);
-    //cv::waitKey(0);
+    cv::imwrite("result/redContours&boundingBox.jpg",temp1);
     
     // 提取高亮颜色区域并进行图形学处理
     // 灰度化: 转化为灰度图中已经演示过了
@@ -71,13 +81,13 @@ int main(){
     cv::Mat BinImg;
 
     cv::threshold(gray, BinImg, 128, 255, cv::THRESH_BINARY_INV); // 由于天空亮度过高，考虑反转
-    // cv::imshow("threshold", BinImg);
-    // cv::waitKey(0);    
+    cv::imwrite("result/binImg.jpg",BinImg);
     
     // 膨胀操作
     cv::Mat kernel1 = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)); 
     cv::Mat dilateImg;
     cv::dilate(BinImg, dilateImg, kernel1);
+    cv::imwrite("result/dilateImg.jpg", dilateImg);
     
     //cv::imshow("dilate Img", dilateImg);
     //cv::waitKey(0);
@@ -85,6 +95,7 @@ int main(){
     // 腐蚀操作
     cv::Mat erodeImg;
     cv::erode(BinImg, erodeImg, kernel1);
+    cv::imwrite("result/erodeImg.jpg", erodeImg);
     
     // cv::imshow("erode Img", erodeImg);
     // cv::waitKey(0);
@@ -94,6 +105,7 @@ int main(){
     src1.copyTo(floodFillImg);
     cv::Rect zeroRec;
     cv::floodFill(floodFillImg, cv::Point(cv::Size(1,1)), cv::Scalar(0,255,0),&zeroRec, cv::Scalar(3,3,3),cv::Scalar(3,3,3));
+    cv::imwrite("result/floodFillImg.jpg", floodFillImg);
     // cv::imshow("floodFill Img", floodFillImg);
     // cv::waitKey(0);
 
@@ -103,6 +115,7 @@ int main(){
     cv::circle(background1, cv::Point(200,200), 100, cv::Scalar(255,255,255));
     cv::rectangle(background1, cv::Point(600, 200), cv::Point(800, 400), cv::Scalar(255,255,255));
     cv::putText(background1,"Hello World", cv::Point(640, 500),cv::FONT_HERSHEY_COMPLEX, 1,cv::Scalar(255,255,255));
+    cv::imwrite("result/drawing.jpg",background1);
     // cv::imshow("square & circles & text",background1);
     // cv::waitKey(0);
 
@@ -113,11 +126,13 @@ int main(){
     cv::Mat rotatedMat= cv::getRotationMatrix2D(cv::Point(640,360), 35, 1);
     cv::Mat rotatedImg;
     cv::warpAffine(src1, rotatedImg, rotatedMat, src1.size());
+    cv::imwrite("result/rotateImg.jpg",rotatedImg);
     // cv::imshow("rotated Img", rotatedImg);
     // cv::waitKey(0);
 
     // 图像裁剪为原图左上角1/4
     cv::Mat cutImg = src1(cv::Range(0,(src1.size().height)/2),cv::Range(0, src1.size().width/2));
+    cv::imwrite("result/cutImg.jpg", cutImg);
     // cv::imshow("Cut Img", cutImg);
     // cv::waitKey(0);
 
@@ -183,6 +198,7 @@ int main(){
             vector<cv::Point2f> temp;
             rotRect.points(temp);
             pts.push_back(temp);        
+            // 输出灯条外接最小矩形的面积
             cout << rotRect.size.area() << endl;
             cv::drawContours(res, contours,i,cv::Scalar(255,255,255));
         } 
@@ -195,7 +211,7 @@ int main(){
     cv::resize(src, src, cv::Size(1280, 720));
     cv::imshow("result", res);
     cv::imshow("src", src);
-    cv::imwrite("./resources/ArmorRecognized.jpg", src);
+    cv::imwrite("./result/ArmorRecognized.jpg", src);
     cv::waitKey(0);
     return 0;
 }
